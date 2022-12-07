@@ -28,14 +28,14 @@ ive1 = ive(A, b1);
 rve1 = rve(A, tolMax1);
 iveBox = [midrad(argMax1(1), ive1);midrad(argMax1(2), ive1)];
 rveBox = [midrad(argMax1(1), rve1);midrad(argMax1(2), rve1)];
-rectangle('position' ,[inf(iveBox(1)), inf(iveBox(2)), sup(iveBox(1)), sup(iveBox(2))])
-plot(rveBox(1), rveBox(2));
+rectangle('position', [inf(iveBox(1)), inf(iveBox(2)), sup(iveBox(1)) - inf(iveBox(1)), sup(iveBox(2)) - inf(iveBox(2))])
+rectangle('position', [inf(rveBox(1)), inf(rveBox(2)), sup(rveBox(1)) - inf(rveBox(1)), sup(rveBox(2)) - inf(rveBox(2))])
 
 %% Коррекция матрицы А
 koef = 1.5;
-b2 = [infsup(-1, 4); infsup(-2, 2); infsup(2, 7)];
+b2 = [infsup(0, 9); infsup(-3, 3); infsup(0, 7); infsup(-2, 5)];
 [tolMax2,argMax2,~,~] = tolsolvty(inf(A), sup(A), inf(b2), sup(b2));
-E = 1 * [argMax2(1) * 0.25 argMax2(2);0 argMax2(2);argMax2(1) * 0.25 0];
+E = 1.036 * [argMax2(1) * 0.23 0.96455; -5.0 0.1; argMax2(1) * 1.23 7.4; 0 argMax2(1) * 0];
 A1 = infsup(inf(A) + E, sup(A) - E);
 A1
 drawContour(A1,b2,n,levels);
@@ -47,10 +47,15 @@ ive2 = ive(A1, b2);
 rve2 = rve(A1, tolMax2);
 iveBox2 = [midrad(argMax2(1), ive2);midrad(argMax2(2), ive2)];
 rveBox2 = [midrad(argMax2(1), rve2);midrad(argMax2(2), rve2)];
-plotintval([iveBox2, rveBox2], 'n');
+rectangle('position', [inf(iveBox(1)), inf(iveBox(2)), sup(iveBox(1)) - inf(iveBox(1)), sup(iveBox(2)) - inf(iveBox(2))])
+rectangle('position', [inf(rveBox(1)), inf(rveBox(2)), sup(rveBox(1)) - inf(rveBox(1)), sup(rveBox(2)) - inf(rveBox(2))])
 
 
 %% Положение максимума Tol
+n = 100;
+levels = 30;
+drawContour(A,b,n,levels)
+
 iterations = 10;
 figure
 A2 = A;
@@ -64,13 +69,16 @@ grid on
 
 %Положение максимумов Tol
 A2 = A;
-line1 = [1, 1; 0, 0; 0, 0]
-line2 = [0, 0; 1, 1; 0, 0]
-line3 = [0, 0; 0, 0; 1, 1]
+line1 = [1, 1; 0, 0; 0, 0; 0, 0]
+line2 = [0, 0; 1, 1; 0, 0; 0, 0]
+line3 = [0, 0; 0, 0; 1, 1; 0, 0]
+line4 = [0, 0; 0, 0; 0, 0; 1, 1]
 figure
 drawTolMax(A2, b, line1, iterations)
 figure
 drawTolMax(A2, b, line2, iterations)
 figure
 drawTolMax(A2, b, line3, iterations)
+figure
+drawTolMax(A2, b, line4, iterations)
 
