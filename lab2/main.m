@@ -32,21 +32,17 @@ rectangle('position', [inf(iveBox(1)), inf(iveBox(2)), sup(iveBox(1)) - inf(iveB
 rectangle('position', [inf(rveBox(1)), inf(rveBox(2)), sup(rveBox(1)) - inf(rveBox(1)), sup(rveBox(2)) - inf(rveBox(2))])
 
 %% Коррекция матрицы А
-koef = 1.5;
-b2 = [infsup(0, 9); infsup(-3, 3); infsup(0, 7); infsup(-2, 5)];
-[tolMax2,argMax2,~,~] = tolsolvty(inf(A), sup(A), inf(b2), sup(b2));
-E = 1.036 * [argMax2(1) * 0.23 0.96455; -5.0 0.1; argMax2(1) * 1.23 7.4; 0 argMax2(1) * 0];
-A1 = infsup(inf(A) + E, sup(A) - E);
-A1
-drawContour(A1,b2,n,levels);
+E = [infsup(-0.75, 0.15), infsup(-1, 1); 0, infsup(-2, 1); infsup(-0.5, 0.3), 0; infsup(0, 2), 0];
+A1 = [infsup(0.75, 1.25), infsup(2); infsup(1), infsup(-3); infsup(0.95, 1.05), infsup(0); infsup(0), infsup(0.75, 1.25)];
+drawContour(A1,b,n,levels);
 
-[tolMax2,argMax2,~,~] = tolsolvty(inf(A1), sup(A1), inf(b2), sup(b2));
+[tolMax2,argMax2,~,~] = tolsolvty(inf(A1), sup(A1), inf(b), sup(b));
 tolMax2
 argMax2
-ive2 = ive(A1, b2);
-rve2 = rve(A1, tolMax2);
-iveBox2 = [midrad(argMax2(1), ive2);midrad(argMax2(2), ive2)];
-rveBox2 = [midrad(argMax2(1), rve2);midrad(argMax2(2), rve2)];
+ive = ive(A1, b);
+rve = rve(A1, tolMax2);
+iveBox = [midrad(argMax2(1), ive2);midrad(argMax2(2), ive2)];
+rveBox = [midrad(argMax2(1), rve2);midrad(argMax2(2), rve2)];
 rectangle('position', [inf(iveBox(1)), inf(iveBox(2)), sup(iveBox(1)) - inf(iveBox(1)), sup(iveBox(2)) - inf(iveBox(2))])
 rectangle('position', [inf(rveBox(1)), inf(rveBox(2)), sup(rveBox(1)) - inf(rveBox(1)), sup(rveBox(2)) - inf(rveBox(2))])
 
@@ -68,17 +64,37 @@ end
 grid on
 
 %Положение максимумов Tol
+iterations = 100;
+figure
+A2 = A;
+for i = 1:iterations
+    A2 = A2 ./ 2;
+    [~,argMax,~,~] = tolsolvty(inf(A2), sup(A2), inf(b), sup(b));
+    plot(argMax(1), argMax(2), 'k+');
+    hold on
+end
+grid on
+
 A2 = A;
 line1 = [1, 1; 0, 0; 0, 0; 0, 0]
 line2 = [0, 0; 1, 1; 0, 0; 0, 0]
 line3 = [0, 0; 0, 0; 1, 1; 0, 0]
 line4 = [0, 0; 0, 0; 0, 0; 1, 1]
-figure
-drawTolMax(A2, b, line1, iterations)
-figure
+[tolMax,argMax,~,~] = tolsolvty(inf(A2), sup(A2), inf(b), sup(b));
+i = 1
+while tolMax < 0
+    C = rad(A2)./2 .*line1;% change line here
+    A2 = infsup(inf(A2)+C, sup(A2)-C);
+    [tolMax,argMax,~,~] = tolsolvty(inf(A2), sup(A2), inf(b), sup(b));
+    hold on
+    i
+    i = i + 1
+end
 drawTolMax(A2, b, line2, iterations)
-figure
-drawTolMax(A2, b, line3, iterations)
-figure
-drawTolMax(A2, b, line4, iterations)
+A2
+grid on
+drawContour(A2,b,n,levels)
+A2
+tolMax
+argMax
 
